@@ -4,21 +4,27 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
-#include <conio.h>
+#include <cstdio>
 #include <filesystem>
-#include <UIHandler.h>
+#include "UIHandler.h"
+
 
 using namespace std;
 namespace fs = std::filesystem;
 
 int main(int argc, char* argv[])
 {
+    string initPath = argv[2];
+    vector<string> Albumlist;
     vector<string> Tracklist;
 
-    for(const auto & entry : fs::directory_iterator(argv[2]))
+
+    for(const auto & entry : fs::directory_iterator(initPath))
     {
-        Tracklist.push_back(entry.path().filename().string());
+        Albumlist.push_back(entry.path().filename().string());
     }
+
+    string songPath = initPath + "/" + Albumlist[0];
 
     int activeTrack = 0;
     int previousTrack = 0;
@@ -27,16 +33,16 @@ int main(int argc, char* argv[])
     updateAlbumBar(argv[4]);
     updateTrackList(Tracklist);
 
-    do
+/*    do
     {
         int cmd;
-        cmd = getch();
+        cmd = getchar();
         
         if (cmd == 0 || cmd == 224)
         {
 
             previousTrack = activeTrack;
-            switch (cmd = getch())
+            switch (cmd = getchar())
             {
             case KEY_UP:
                 activeTrack--;
@@ -49,11 +55,11 @@ int main(int argc, char* argv[])
                 cout << "Pressed key value: " << cmd;
                 break;
             }
-            //updateUI(Dashboard, Tracklist, activeTrack);
+            
             updateActiceTrack(Tracklist, activeTrack, previousTrack);
         }
 
     } while (activeTrack >= 0);
-    
+*/
     return 0;
 }

@@ -1,11 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <stdlib.h>
-#include <stdio.h>
-#include <conio.h>
-#include <filesystem>
 #include <UIHandler.h>
 
 using namespace std;
@@ -14,7 +6,8 @@ namespace fs = std::filesystem;
 
 void initUI(const string path)
 {
-    system("cls");          //Clear the screen
+    //Clear the screen
+    cout << "\033[1J" << "\033[1;1H";
     cout << HIDE_CURSOR;    //Hide the cursor
 
     string UIText;

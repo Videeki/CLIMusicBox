@@ -1,3 +1,17 @@
+#ifndef UIHANDLER_H
+#define UIHANDLER_H
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <stdlib.h>
+#include <stdio.h>
+#include <cstdio>
+#include <filesystem>
+
+using namespace std;
+
 #define KEY_UP                  72
 #define KEY_DOWN                80
 #define KEY_LEFT                75
@@ -74,3 +88,5 @@ void updateTrackList(const vector<string>& tracklist);
 void updateTrackBar(const string actSong);
 void updateAlbumBar(const string actAlbum);
 void updateActiceTrack(const vector<string>& tracklist, const int actTrack, const int prevTrack);
+
+#endif  /* UIHANDLER_H */
