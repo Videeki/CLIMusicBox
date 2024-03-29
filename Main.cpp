@@ -7,7 +7,8 @@
 #include <cstdio>
 #include <filesystem>
 #include "UIHandler.h"
-
+#include "GPIOHandler.h"
+#include "PlayMusic.h"
 
 using namespace std;
 namespace fs = std::filesystem;
