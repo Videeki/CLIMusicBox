@@ -18,13 +18,21 @@
     #include <mpg123.h>
     #define BITS 8
 
+    typedef struct Player{
+        mpg123_handle *mh;
+        unsigned char *buffer;
+        size_t buffer_size;
+        int driver;
+        ao_device *dev;
+    } Player;
+
 #else
     printf("Sorry, the system are not implemented yet... :'(\n")
 
 #endif
 
-int initMusic();
-int playMusic(char *path);
-int closeMusic();
+int initMusic(Player* player);
+int playMusic(Player* player, char *path);
+int closeMusic(Player* player);
 
 #endif  /* PLAYMUSIC_H */

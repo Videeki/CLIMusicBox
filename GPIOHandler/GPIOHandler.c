@@ -1,7 +1,7 @@
 // Compiling: gcc GPIOHandler.c -o Builds/GPIOHandler
 #include "GPIOHandler.h"
 
-
+/*
 int initPIN(int pinNr)
 {
     #ifdef _WIN32
@@ -125,7 +125,7 @@ int deinitPIN(int pinNr)
 
     return 0;
 }
-
+*/
 int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction)
 {
     #ifdef _WIN32
@@ -139,7 +139,7 @@ int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction)
     fd = open(DEV_NAME, O_RDONLY);
     if (fd < 0)
     {
-        printf("Unabled to open %s: %s", DEV_NAME, strerror(errno));
+        printf("Unabled to open %s: %s\n", DEV_NAME, strerror(errno));
         return fd;
     }
     
@@ -156,7 +156,7 @@ int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction)
 
     if (ret == -1)
     {
-        printf("Unable to get line handle from ioctl : %s", strerror(errno));
+        printf("Unable to get line handle from ioctl : %s\n", strerror(errno));
         return ret;
     }
     #endif
@@ -182,7 +182,7 @@ int writeGPIO(refStruct* rq, int* values)
     ret = ioctl(rq->fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data);
     if (ret == -1)
     {
-        printf("Unable to set line value using ioctl : %%s", strerror(errno));
+        printf("Unable to set line value using ioctl : %s\n", strerror(errno));
         return ret;
     }
     else
@@ -209,7 +209,7 @@ int readGPIO(refStruct* rq, int* values)
     ret = ioctl(rq->fd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data);
     if (ret == -1)
     {
-        printf("Unable to get line value using ioctl : %s", strerror(errno));
+        printf("Unable to get line value using ioctl : %s\n", strerror(errno));
         return ret;
     }
     else

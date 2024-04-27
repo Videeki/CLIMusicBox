@@ -24,6 +24,12 @@ void updateTrackList(const vector<string>& tracklist)
 {
     int i = 0;
     string substring(MAX_LIST_WEIGHT, ' ');
+    for(int j = 0; j < MAX_LIST_LENGTH; j++)
+    {
+        cout << "\033[" << LIST_OFFSET_START_Y + j << ";" << LIST_OFFSET_START_X << "H";
+        cout << RESET << substring << RESET;
+    }
+
 
     for(string track : tracklist)
     {

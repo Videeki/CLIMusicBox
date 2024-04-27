@@ -2,6 +2,9 @@
 /*                                                                                               */
 /*   Source: http://hzqtc.github.io/2012/05/play-mp3-with-libmpg123-and-libao.html               */
 /*   Help: https://stackoverflow.com/questions/26007700/play-mp3-on-raspberry-with-mpg123-and-c  */
+/*         https://snapcraft.io/install/mpg123-cm/raspbian                                       */
+/*   Install -> Linux:  sudo apt-get install libao-dev                                           */
+/*                      sudo apt-get install libmpg123-dev                                       */
 /*                                                                                               */
 /*                                                                                               */
 /*   Compiling -> Linux: gcc -O2 PlayMusic.c -o PlayMusic -lmpg123 -lao                          */
@@ -11,35 +14,21 @@
 #include "PlayMusic.h"
 
 
-#ifdef __linux__
-mpg123_handle *mh;
-unsigned char *buffer;
-size_t buffer_size;
-size_t done;
-int err;
-
-int driver;
-ao_device *dev;
-
-ao_sample_format format;
-int channels, encoding;
-long rate;
-#endif
-
-int initMusic()
+int initMusic(Player* player)
 {
     #ifdef _WIN32
         // Not neccesary the initialization //
 
     #elif __linux__
         // initializations //
-        ao_initialize();
-        driver = ao_default_driver_id();
-        mpg123_init();
-        mh = mpg123_new(NULL, &err);
-        buffer_size = mpg123_outblock(mh);
-        buffer = (unsigned char*) malloc(buffer_size * sizeof(unsigned char));
+        int err;
 
+        ao_initialize();
+        player->driver = ao_default_driver_id();
+        mpg123_init();
+        player->mh = mpg123_new(NULL, &err);
+        player->buffer_size = mpg123_outblock(player->mh);
+        player->buffer = (unsigned char*) malloc(player->buffer_size * sizeof(unsigned char));
     #else
         printf("Sorry, the system are not implemented yet... :'(\n")
 
@@ -48,7 +37,7 @@ int initMusic()
     return 0;
 }
 
-int playMusic(char *path)
+int playMusic(Player* player, char *path)
 {
     #ifdef _WIN32
         char cmd[1024];
@@ -61,9 +50,13 @@ int playMusic(char *path)
         mciSendString("close mp3", NULL, 0, NULL);
 
     #elif __linux__
+        int channels, encoding;
+        long rate;
+        size_t done;
+        ao_sample_format format;
         // open the file and get the decoding format //
-        mpg123_open(mh, path);
-        mpg123_getformat(mh, &rate, &channels, &encoding);
+        mpg123_open(player->mh, path);
+        mpg123_getformat(player->mh, &rate, &channels, &encoding);
 
         // set the output format and open the output device //
         format.bits = mpg123_encsize(encoding) * BITS;
@@ -71,11 +64,11 @@ int playMusic(char *path)
         format.channels = channels;
         format.byte_format = AO_FMT_NATIVE;
         format.matrix = 0;
-        dev = ao_open_live(driver, &format, NULL);
+        player->dev = ao_open_live(player->driver, &format, NULL);
 
         // decode and play //
-        while (mpg123_read(mh, buffer, buffer_size, &done) == MPG123_OK)
-            ao_play(dev, buffer, done);
+        while (mpg123_read(player->mh, player->buffer, player->buffer_size, &done) == MPG123_OK)
+            ao_play(player->dev, (char*)player->buffer, done);
 
     #else
         printf("Sorry, the system are not implemented yet... :'(\n")
@@ -85,17 +78,17 @@ int playMusic(char *path)
     return 0;
 }
 
-int closeMusic()
+int closeMusic(Player* player)
 {
     #ifdef _WIN32
         // Not neccesary the initialization //
 
     #elif __linux__
         // clean up //
-        free(buffer);
-        ao_close(dev);
-        mpg123_close(mh);
-        mpg123_delete(mh);
+        free(player->buffer);
+        ao_close(player->dev);
+        mpg123_close(player->mh);
+        mpg123_delete(player->mh);
         mpg123_exit();
         ao_shutdown();
 

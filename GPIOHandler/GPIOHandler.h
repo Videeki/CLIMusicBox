@@ -42,11 +42,11 @@
 #define INPUT 0
 #define OUTPUT 1
 
-int initPIN(int pinNr);
-int setupPIN(int pinNr, char *mode);
-int writePIN(int pinNr, int value);
-int readPIN(int pinNr);
-int deinitPIN(int pinNr);
+//int initPIN(int pinNr);
+//int setupPIN(int pinNr, char *mode);
+//int writePIN(int pinNr, int value);
+//int readPIN(int pinNr);
+//int deinitPIN(int pinNr);
 
 int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction);
 int writeGPIO(refStruct* rq, int* values);
