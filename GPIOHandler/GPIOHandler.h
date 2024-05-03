@@ -48,11 +48,11 @@
 //int readPIN(int pinNr);
 //int deinitPIN(int pinNr);
 
-int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction);
-int writeGPIO(refStruct* rq, int* values);
-int readGPIO(refStruct* rq, int* values);
+int initGPIO(refStruct* self, int pins[], int nrOfPins, int direction);
+int writeGPIO(refStruct* self, int* values);
+int readGPIO(refStruct* self, int* values);
 int pollGPIO(int offset);
-int detectButtonAction(refStruct* rq, int* values, int msdelay);
-int closeGPIO(refStruct* rq);
+int detectButtonAction(refStruct* self, int* values, int msdelay);
+int closeGPIO(refStruct* self);
 
 #endif	/* GPIOHANDLER_H */

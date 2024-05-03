@@ -126,14 +126,14 @@ int deinitPIN(int pinNr)
     return 0;
 }
 */
-int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction)
+int initGPIO(refStruct* self, int pins[], int nrOfPins, int direction)
 {
     #ifdef _WIN32
     int ret = 0;
 	printf("The GPIO Handling has not implemented yet on Windows.\n");
 
     #elif __linux__
-    strcpy(rq->consumer_label, "MusicBoxButtons");
+    strcpy(self->consumer_label, "MusicBoxButtons");
     int fd, ret, i;
     // open the device
     fd = open(DEV_NAME, O_RDONLY);
@@ -145,13 +145,13 @@ int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction)
     
     for(i = 0; i < nrOfPins; i++)
     {
-        rq->default_values[i] = 0;
-        rq->lineoffsets[i] = pins[i];
+        self->default_values[i] = 0;
+        self->lineoffsets[i] = pins[i];
     }
 
-    (direction == INPUT) ? (rq->flags = GPIOHANDLE_REQUEST_INPUT) : (rq->flags = GPIOHANDLE_REQUEST_OUTPUT);
-    rq->lines = nrOfPins;
-    ret = ioctl(fd, GPIO_GET_LINEHANDLE_IOCTL, rq);
+    (direction == INPUT) ? (self->flags = GPIOHANDLE_REQUEST_INPUT) : (self->flags = GPIOHANDLE_REQUEST_OUTPUT);
+    self->lines = nrOfPins;
+    ret = ioctl(fd, GPIO_GET_LINEHANDLE_IOCTL, self);
     close(fd);
 
     if (ret == -1)
@@ -164,7 +164,7 @@ int initGPIO(refStruct* rq, int pins[], int nrOfPins, int direction)
     return ret;
 }
 
-int writeGPIO(refStruct* rq, int* values)
+int writeGPIO(refStruct* self, int* values)
 {
     #ifdef _WIN32
     int ret = 0;
@@ -174,12 +174,12 @@ int writeGPIO(refStruct* rq, int* values)
     struct gpiohandle_data data;
     int ret, i;
 
-    for(i = 0; i < rq->lines; i++)
+    for(i = 0; i < self->lines; i++)
     {
         data.values[i] = values[i];
     }
 
-    ret = ioctl(rq->fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data);
+    ret = ioctl(self->fd, GPIOHANDLE_SET_LINE_VALUES_IOCTL, &data);
     if (ret == -1)
     {
         printf("Unable to set line value using ioctl : %s\n", strerror(errno));
@@ -194,7 +194,7 @@ int writeGPIO(refStruct* rq, int* values)
     return ret;
 }
 
-int readGPIO(refStruct* rq, int* values)
+int readGPIO(refStruct* self, int* values)
 {
     #ifdef _WIN32
     int ret = 0;
@@ -202,11 +202,11 @@ int readGPIO(refStruct* rq, int* values)
 
     #elif __linux__
     struct gpiohandle_data data;
-    int nrOfPins = rq->lines;
+    int nrOfPins = self->lines;
     
     int ret, i;
 
-    ret = ioctl(rq->fd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data);
+    ret = ioctl(self->fd, GPIOHANDLE_GET_LINE_VALUES_IOCTL, &data);
     if (ret == -1)
     {
         printf("Unable to get line value using ioctl : %s\n", strerror(errno));
@@ -276,14 +276,14 @@ int pollGPIO(int offset)
     return ret;
 }
 
-int detectButtonAction(refStruct* rq, int* values, int msdelay)
+int detectButtonAction(refStruct* self, int* values, int msdelay)
 {
     #ifdef _WIN32
     int ret = 0;
 	printf("The GPIO Handling has not implemented yet on Windows.\n");
 
     #elif __linux__
-    int nrOfPins = rq->lines;
+    int nrOfPins = self->lines;
     int ctrlPINSValues[nrOfPins];
     int ret, i, sum;
  
@@ -291,7 +291,7 @@ int detectButtonAction(refStruct* rq, int* values, int msdelay)
     int released = -1;
     do  //Polling
     {
-        ret = readGPIO(rq, ctrlPINSValues);
+        ret = readGPIO(self, ctrlPINSValues);
         if (ret == -1)
         {
             return ret;
@@ -314,7 +314,7 @@ int detectButtonAction(refStruct* rq, int* values, int msdelay)
             pushed = 1;
             do
             {
-                readGPIO(rq, ctrlPINSValues);
+                readGPIO(self, ctrlPINSValues);
                 if (ret == -1)
                 {
                     return ret;
@@ -340,13 +340,13 @@ int detectButtonAction(refStruct* rq, int* values, int msdelay)
     return ret; 
 }
 
-int closeGPIO(refStruct* rq)
+int closeGPIO(refStruct* self)
 {
     #ifdef _WIN32
 	printf("The GPIO Handling has not implemented yet on Windows.\n");
 
     #elif __linux__    
-    close(rq->fd);
+    close(self->fd);
     #endif
 
     return 0;

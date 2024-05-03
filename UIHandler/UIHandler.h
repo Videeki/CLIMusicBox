@@ -87,6 +87,6 @@ void initUI(const string path);
 void updateTrackList(const vector<string>& tracklist);
 void updateTrackBar(const string actSong);
 void updateAlbumBar(const string actAlbum);
-void updateActiceTrack(const vector<string>& tracklist, const int actTrack, const int prevTrack);
+void updateActiveTrack(const vector<string>& tracklist, const int actTrack, const int prevTrack);
 
 #endif  /* UIHANDLER_H */

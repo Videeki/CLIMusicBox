@@ -14,7 +14,7 @@
 #include "PlayMusic.h"
 
 
-int initMusic(Player* player)
+int initMusic(Player* self)
 {
     #ifdef _WIN32
         // Not neccesary the initialization //
@@ -24,11 +24,11 @@ int initMusic(Player* player)
         int err;
 
         ao_initialize();
-        player->driver = ao_default_driver_id();
+        self->driver = ao_default_driver_id();
         mpg123_init();
-        player->mh = mpg123_new(NULL, &err);
-        player->buffer_size = mpg123_outblock(player->mh);
-        player->buffer = (unsigned char*) malloc(player->buffer_size * sizeof(unsigned char));
+        self->mh = mpg123_new(NULL, &err);
+        self->buffer_size = mpg123_outblock(self->mh);
+        self->buffer = (unsigned char*) malloc(self->buffer_size * sizeof(unsigned char));
     #else
         printf("Sorry, the system are not implemented yet... :'(\n")
 
@@ -37,7 +37,7 @@ int initMusic(Player* player)
     return 0;
 }
 
-int playMusic(Player* player, char *path)
+int playMusic(Player* self, char *path)
 {
     #ifdef _WIN32
         char cmd[1024];
@@ -55,8 +55,8 @@ int playMusic(Player* player, char *path)
         size_t done;
         ao_sample_format format;
         // open the file and get the decoding format //
-        mpg123_open(player->mh, path);
-        mpg123_getformat(player->mh, &rate, &channels, &encoding);
+        mpg123_open(self->mh, path);
+        mpg123_getformat(self->mh, &rate, &channels, &encoding);
 
         // set the output format and open the output device //
         format.bits = mpg123_encsize(encoding) * BITS;
@@ -64,11 +64,11 @@ int playMusic(Player* player, char *path)
         format.channels = channels;
         format.byte_format = AO_FMT_NATIVE;
         format.matrix = 0;
-        player->dev = ao_open_live(player->driver, &format, NULL);
+        self->dev = ao_open_live(self->driver, &format, NULL);
 
         // decode and play //
-        while (mpg123_read(player->mh, player->buffer, player->buffer_size, &done) == MPG123_OK)
-            ao_play(player->dev, (char*)player->buffer, done);
+        while (mpg123_read(self->mh, self->buffer, self->buffer_size, &done) == MPG123_OK)
+            ao_play(self->dev, (char*)self->buffer, done);
 
     #else
         printf("Sorry, the system are not implemented yet... :'(\n")
@@ -78,17 +78,17 @@ int playMusic(Player* player, char *path)
     return 0;
 }
 
-int closeMusic(Player* player)
+int closeMusic(Player* self)
 {
     #ifdef _WIN32
         // Not neccesary the initialization //
 
     #elif __linux__
         // clean up //
-        free(player->buffer);
-        ao_close(player->dev);
-        mpg123_close(player->mh);
-        mpg123_delete(player->mh);
+        free(self->buffer);
+        ao_close(self->dev);
+        mpg123_close(self->mh);
+        mpg123_delete(self->mh);
         mpg123_exit();
         ao_shutdown();
 

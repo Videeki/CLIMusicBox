@@ -211,7 +211,7 @@ void updateTrackBar(const string actSong)
 }
 
 
-void updateActiceTrack(const vector<string>& tracklist, const int actTrack, const int prevTrack)
+void updateActiveTrack(const vector<string>& tracklist, const int actTrack, const int prevTrack)
 {
     string substring(MAX_LIST_WEIGHT, ' ');
     if(actTrack > prevTrack)
@@ -219,28 +219,32 @@ void updateActiceTrack(const vector<string>& tracklist, const int actTrack, cons
         cout << "\033[" << LIST_OFFSET_START_Y + prevTrack << ";" << LIST_OFFSET_START_X << "H";
         substring = tracklist[prevTrack].substr(0, MAX_LIST_WEIGHT);
         substring.resize(MAX_LIST_WEIGHT, ' ');
+        cout << RESET;
         cout << substring;
         
         cout << "\033[" << LIST_OFFSET_START_Y + actTrack << ";" << LIST_OFFSET_START_X << "H";
         substring = tracklist[actTrack].substr(0, MAX_LIST_WEIGHT);
         substring.resize(MAX_LIST_WEIGHT, ' ');
-        cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD) << substring << RESET;
+        cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD);
+        cout << substring << RESET;
         
     }
-    else if(actTrack > prevTrack)
+    else if(actTrack < prevTrack)
     {
         cout << "\033[" << LIST_OFFSET_START_Y + actTrack << ";" << LIST_OFFSET_START_X << "H";
         substring = tracklist[actTrack].substr(0, MAX_LIST_WEIGHT);
         substring.resize(MAX_LIST_WEIGHT, ' ');
+        cout << RESET;
         cout << substring;
         
         cout << "\033[" << LIST_OFFSET_START_Y + prevTrack << ";" << LIST_OFFSET_START_X << "H";
         substring = tracklist[prevTrack].substr(0, MAX_LIST_WEIGHT);
         substring.resize(MAX_LIST_WEIGHT, ' ');
-        cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD) << substring << RESET;
+        cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD);
+        cout << substring << RESET;
     }
     else
     {
-
+        cout << "prevTrack: " << prevTrack << " actTrack: " << actTrack << endl; 
     }
 }

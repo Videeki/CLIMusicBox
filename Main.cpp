@@ -8,17 +8,20 @@
 #include <stdio.h>
 #include <cstdio>
 #include <filesystem>
+#include <queue>
+#include <functional>
 #include "UIHandler.h"
 #include "GPIOHandler.h"
 #include "PlayMusic.h"
+#include "FolderHandler.h"
 
 using namespace std;
 namespace fs = std::filesystem;
 
 #define JUMP2INFO   "\e[33;9H"
 
-void cmdProc(string musicPath);
-void addMusicQueue();
+void cmdProc(queue<string>& playlist, string musicPath);
+void player(queue<string>& playlist);
 
 
 int main(int argc, char* argv[])
@@ -26,41 +29,41 @@ int main(int argc, char* argv[])
     //initUI(argv[1]);
     initUI("/home/Videeki/Documents/GitRepos/CLIMusicBox/Utilities/Dashboard.txt");
     //string musicPath = argv[2];
-    string musicPath = "/home/Videeki/Music/";
-    thread cmdProcTID(cmdProc, musicPath);
+    string musicPath = "/home/Videeki/Music";
+    
+    queue<string> musicQueue;
+    
+    thread cmdProcTID(cmdProc, ref(musicQueue), musicPath);
+    thread playerTID(player, ref(musicQueue));
+
     cmdProcTID.join();
         
 
-    
-
-    
-    
     return 0;
 }
 
-void cmdProc(string musicPath)
+void cmdProc(queue<string>& playlist, string musicPath)
 {
-    vector<string> Albumlist;
-    vector<string> Tracklist;
-    Player player;
+    vector<string> Albumlist = listFolders(musicPath);
     int actAlbum = 0;
     int actTrack = 0;
     int prevTrack = 0;
 
-    for(const auto & entry : fs::directory_iterator(musicPath))
-    {
-        Albumlist.push_back(entry.path().filename().string());
-    }
+    //for(const auto & entry : fs::directory_iterator(musicPath))
+    //{
+    //    Albumlist.push_back(entry.path().filename().string());
+    //}
     string albumPath = musicPath + "/" + Albumlist[actAlbum];
     updateAlbumBar(Albumlist[actAlbum]);
 
-    for(const auto & entry : fs::directory_iterator(albumPath))
-    {
-        Tracklist.push_back(entry.path().filename().string());
-    }
+    vector<string> Tracklist = listFiles(albumPath, "mp3");
+    //for(const auto & entry : fs::directory_iterator(albumPath))
+    //{
+    //    Tracklist.push_back(entry.path().filename().string());
+    //}
     
     string trackPath = albumPath + "/" + Tracklist[actTrack];
-    updateTrackList(Tracklist);
+    updateTrackList(ref(Tracklist));
     
     refStruct gpio;
     int gpiopins[5] = {23, 24, 25, 26, 27};
@@ -76,7 +79,7 @@ void cmdProc(string musicPath)
         return;
     }
 
-    initMusic(&player);
+    
     
     int sum = 0;
     do
@@ -100,10 +103,7 @@ void cmdProc(string musicPath)
         {
             case 1:     //addMusic2Playlist
             {
-                updateTrackBar(Tracklist[actTrack]);
-                cout << JUMP2INFO;
-                playMusic(&player, trackPath.data());
-                
+                playlist.push(trackPath.data());
                 break;
             }
 
@@ -113,11 +113,10 @@ void cmdProc(string musicPath)
                 updateAlbumBar(Albumlist[++actAlbum]);
                 albumPath = musicPath + "/" + Albumlist[actAlbum];
                 Tracklist.clear();
-                for(const auto & entry : fs::directory_iterator(albumPath))
-                {
-                    Tracklist.push_back(entry.path().filename().string());
-                };
-                updateTrackList(Tracklist);
+                Tracklist = listFiles(albumPath, "mp3");
+                trackPath = albumPath + "/" + Tracklist[actTrack];
+                
+                updateTrackList(ref(Tracklist));
                 
                 break;
             }
@@ -128,11 +127,10 @@ void cmdProc(string musicPath)
                 updateAlbumBar(Albumlist[--actAlbum]);
                 albumPath = musicPath + "/" + Albumlist[actAlbum];
                 Tracklist.clear();
-                for(const auto & entry : fs::directory_iterator(albumPath))
-                {
-                    Tracklist.push_back(entry.path().filename().string());
-                };
-                updateTrackList(Tracklist);
+                Tracklist = listFiles(albumPath, "mp3");
+                trackPath = albumPath + "/" + Tracklist[actTrack];
+                
+                updateTrackList(ref(Tracklist));
 
                 break;
             }
@@ -141,7 +139,7 @@ void cmdProc(string musicPath)
             {
                 prevTrack = actTrack++;
                 trackPath = albumPath + "/" + Tracklist[actTrack];
-                updateActiceTrack(Tracklist, actTrack, prevTrack);
+                updateActiveTrack(ref(Tracklist), actTrack, prevTrack);
 
                 break;
             }
@@ -150,7 +148,7 @@ void cmdProc(string musicPath)
             {
                 prevTrack = actTrack--;
                 trackPath = albumPath + "/" + Tracklist[actTrack];
-                updateActiceTrack(Tracklist, actTrack, prevTrack);
+                updateActiveTrack(ref(Tracklist), actTrack, prevTrack);
                 
                 break;
             }
@@ -158,6 +156,7 @@ void cmdProc(string musicPath)
             case 31:    //Ultimate combo
             {
                 puts("Ultimate combo!");
+                playlist.push("__STOP__");
             }
 
             default:
@@ -168,6 +167,52 @@ void cmdProc(string musicPath)
         }
     } while (sum != 31);
     
-    closeMusic(&player);
+    
     closeGPIO(&gpio);
+}
+
+void player(queue<string>& playlist)
+{
+    bool run = true;
+    Player player;
+    initMusic(&player);
+    
+    cout << JUMP2INFO;
+    cout << "Start player";
+
+    do
+    {
+        if(playlist.empty())
+        {
+            sleep(1);
+        }
+        else
+        {
+            //updateTrackBar(Tracklist[actTrack]);
+
+            string nextSong = playlist.front();
+            playlist.pop();
+            
+            if(nextSong == "__STOP__")
+            {
+                run = false;
+            }
+            else
+            {
+                //Update Current song.
+
+                cout << JUMP2INFO;
+                playMusic(&player, nextSong.data()); 
+            }
+
+            
+        }
+
+    } while (run);
+    
+    closeMusic(&player);
+
+    cout << JUMP2INFO;
+    cout << "Stop player";
+
 }

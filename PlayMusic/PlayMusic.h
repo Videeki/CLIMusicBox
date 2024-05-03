@@ -31,8 +31,8 @@
 
 #endif
 
-int initMusic(Player* player);
-int playMusic(Player* player, char *path);
-int closeMusic(Player* player);
+int initMusic(Player* self);
+int playMusic(Player* self, char *path);
+int closeMusic(Player* self);
 
 #endif  /* PLAYMUSIC_H */
