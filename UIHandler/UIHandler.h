@@ -84,6 +84,7 @@ using namespace std;
 #define MAX_ALBUM_WEIGHT        ALBUM_OFFSET_END_X - ALBUM_OFFSET_START_X
 
 void initUI(const string path);
+void getFont(const string path);
 void updateTrackList(const vector<string>& tracklist);
 void updateTrackBar(const string actSong);
 void updateAlbumBar(const string actAlbum);

@@ -1,16 +1,17 @@
-/*************************************************************************************************/
-/*                                                                                               */
-/*   Source: http://hzqtc.github.io/2012/05/play-mp3-with-libmpg123-and-libao.html               */
-/*   Help: https://stackoverflow.com/questions/26007700/play-mp3-on-raspberry-with-mpg123-and-c  */
-/*         https://snapcraft.io/install/mpg123-cm/raspbian                                       */
-/*   Install -> Linux:  sudo apt-get install libao-dev                                           */
-/*                      sudo apt-get install libmpg123-dev                                       */
-/*                                                                                               */
-/*                                                                                               */
-/*   Compiling -> Linux: gcc -O2 PlayMusic.c -o PlayMusic -lmpg123 -lao                          */
-/*   Compiling -> Windows: gcc PlayMusic.c -o PlayMusic.exe -lwinmm                              */
-/*                                                                                               */
-/*************************************************************************************************/
+/****************************************************************************************************/
+/*                                                                                                  */
+/*   Source: http://hzqtc.github.io/2012/05/play-mp3-with-libmpg123-and-libao.html                  */
+/*   Help: https://stackoverflow.com/questions/26007700/play-mp3-on-raspberry-with-mpg123-and-c     */
+/*         https://snapcraft.io/install/mpg123-cm/raspbian                                          */
+/*   Install -> Linux:  sudo apt-get install libao-dev                                              */
+/*                      sudo apt-get install libmpg123-dev                                          */
+/*   ALSA error fix: /usr/share/alsa/alsa.conf                                                      */
+/*                change the line "pcm.front cards.pcm.front" to "pcm.front cards.pcm.default"      */
+/*                                                                                                  */
+/*   Compiling -> Linux: gcc -O2 PlayMusic.c -o PlayMusic -lmpg123 -lao                             */
+/*   Compiling -> Windows: gcc PlayMusic.c -o PlayMusic.exe -lwinmm                                 */
+/*                                                                                                  */
+/****************************************************************************************************/
 #include "PlayMusic.h"
 
 

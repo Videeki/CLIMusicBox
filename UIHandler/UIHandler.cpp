@@ -1,7 +1,6 @@
 #include <UIHandler.h>
 
 using namespace std;
-namespace fs = std::filesystem;
 
 
 void initUI(const string path)
@@ -15,8 +14,14 @@ void initUI(const string path)
 
     while(getline(UIFile, UIText))
     {
-        cout << UIText << endl;
+        cout << UIText << endl << flush;
     }
+}
+
+
+void getFont(const string path)
+{
+
 }
 
 
@@ -25,12 +30,10 @@ void updateTrackList(const vector<string>& tracklist)
     int i = 0;
     string substring(MAX_LIST_WEIGHT, ' ');
 
-    int forStop = tracklist.size() > MAX_LIST_LENGTH ? MAX_LIST_LENGTH : tracklist.size();
-
-    for(int j = 0; j < forStop; j++)
+    for(int j = 0; j < MAX_LIST_LENGTH; j++)
     {
         cout << "\033[" << LIST_OFFSET_START_Y + j << ";" << LIST_OFFSET_START_X << "H";
-        cout << RESET << substring << RESET;
+        cout << RESET << substring << RESET << flush;
     }
 
 
@@ -128,7 +131,7 @@ void updateAlbumBar(const string actAlbum)
         {
             readable.resize(MAX_ALBUM_WEIGHT, ' ');
         }
-        cout << readable;
+        cout << readable << flush;
     }
 }
 
@@ -217,37 +220,16 @@ void updateTrackBar(const string actSong)
 void updateActiveTrack(const vector<string>& tracklist, const int actTrack, const int prevTrack)
 {
     string substring(MAX_LIST_WEIGHT, ' ');
-    if(actTrack > prevTrack)
-    {
-        cout << "\033[" << LIST_OFFSET_START_Y + prevTrack << ";" << LIST_OFFSET_START_X << "H";
-        substring = tracklist[prevTrack].substr(0, MAX_LIST_WEIGHT);
-        substring.resize(MAX_LIST_WEIGHT, ' ');
-        cout << RESET;
-        cout << substring << flush;
+    
+    cout << "\033[" << LIST_OFFSET_START_Y + prevTrack << ";" << LIST_OFFSET_START_X << "H";
+    substring = tracklist[prevTrack].substr(0, MAX_LIST_WEIGHT);
+    substring.resize(MAX_LIST_WEIGHT, ' ');
+    cout << RESET;
+    cout << substring << flush;
         
-        cout << "\033[" << LIST_OFFSET_START_Y + actTrack << ";" << LIST_OFFSET_START_X << "H";
-        substring = tracklist[actTrack].substr(0, MAX_LIST_WEIGHT);
-        substring.resize(MAX_LIST_WEIGHT, ' ');
-        cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD);
-        cout << substring << RESET << flush;
-        
-    }
-    else if(actTrack < prevTrack)
-    {
-        cout << "\033[" << LIST_OFFSET_START_Y + actTrack << ";" << LIST_OFFSET_START_X << "H";
-        substring = tracklist[actTrack].substr(0, MAX_LIST_WEIGHT);
-        substring.resize(MAX_LIST_WEIGHT, ' ');
-        cout << RESET;
-        cout << substring << flush;
-        
-        cout << "\033[" << LIST_OFFSET_START_Y + prevTrack << ";" << LIST_OFFSET_START_X << "H";
-        substring = tracklist[prevTrack].substr(0, MAX_LIST_WEIGHT);
-        substring.resize(MAX_LIST_WEIGHT, ' ');
-        cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD);
-        cout << substring << RESET << flush;
-    }
-    else
-    {
-        cout << "prevTrack: " << prevTrack << " actTrack: " << actTrack << endl; 
-    }
+    cout << "\033[" << LIST_OFFSET_START_Y + actTrack << ";" << LIST_OFFSET_START_X << "H";
+    substring = tracklist[actTrack].substr(0, MAX_LIST_WEIGHT);
+    substring.resize(MAX_LIST_WEIGHT, ' ');
+    cout << DESIGN(BF_WHITE, BG_YELLOW, BOLD);
+    cout << substring << RESET << flush;
 }

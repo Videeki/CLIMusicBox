@@ -26,10 +26,8 @@ void player(queue<string>& playlist);
 
 int main(int argc, char* argv[])
 {
-    //initUI(argv[1]);
-    initUI("/home/Videeki/Documents/GitRepos/CLIMusicBox/Utilities/Dashboard.txt");
-    //string musicPath = argv[2];
-    string musicPath = "/home/Videeki/Music";
+    initUI(argv[1]);
+    string musicPath = argv[2];
     
     queue<string> musicQueue;
     
@@ -49,18 +47,10 @@ void cmdProc(queue<string>& playlist, string musicPath)
     int actTrack = 0;
     int prevTrack = 0;
 
-    //for(const auto & entry : fs::directory_iterator(musicPath))
-    //{
-    //    Albumlist.push_back(entry.path().filename().string());
-    //}
     string albumPath = musicPath + "/" + Albumlist[actAlbum];
     updateAlbumBar(Albumlist[actAlbum]);
 
     vector<string> Tracklist = listFiles(albumPath, "mp3");
-    //for(const auto & entry : fs::directory_iterator(albumPath))
-    //{
-    //    Tracklist.push_back(entry.path().filename().string());
-    //}
     
     string trackPath = albumPath + "/" + Tracklist[actTrack];
     updateTrackList(ref(Tracklist));
@@ -176,9 +166,6 @@ void player(queue<string>& playlist)
     bool run = true;
     Player player;
     initMusic(&player);
-    
-    cout << JUMP2INFO;
-    cout << "Start player";
 
     do
     {
@@ -211,8 +198,5 @@ void player(queue<string>& playlist)
     } while (run);
     
     closeMusic(&player);
-
-    cout << JUMP2INFO;
-    cout << "Stop player";
 
 }
